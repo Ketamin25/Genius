@@ -9,30 +9,37 @@
     --bg:#0b0e13; --text:#e8edf6; --muted:#9aa7b6; --panel:#101725; --row:#141d2c; --row2:#182235;
     --head:#0d2f50; --border:#223149; --green:#39d98a; --red:#ff6b6b;
   }
-  html,body{margin:0;background:radial-gradient(1200px 600px at 60% -150px,#111a2a 0,#0b0e13 60%);color:var(--text);font:16px/1.55 system-ui}
-  .wrap{max-width:1180px;margin:0 auto;padding:20px}
-  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:10px}
-  h1{margin:0;font-size:22px}
-  .controls{display:flex;gap:10px;align-items:center;background:var(--panel);padding:10px 12px;border:1px solid var(--border);border-radius:12px}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui}
+  .wrap{max-width:1180px;margin:0 auto;padding:10px}
+  
+  header{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;align-items:center}
+  h1{margin:0;font-size:18px;flex:1 1 100%}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;background:var(--panel);padding:8px;border:1px solid var(--border);border-radius:12px;flex:1 1 100%}
   label{font-size:13px;color:var(--muted)}
-  select{background:#0f1626;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 36px 10px 12px}
-  .btn{appearance:none;cursor:pointer;background:#172236;color:#fff;border:1px solid var(--border);padding:10px 12px;border-radius:10px}
+  select,.btn{flex:1 1 auto;min-width:100px}
+  
+  select{background:#0f1626;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px}
+  .btn{appearance:none;cursor:pointer;background:#172236;color:#fff;border:1px solid var(--border);padding:8px;border-radius:10px;font-size:14px}
   .btn:hover{filter:brightness(1.06)}
   .btn.danger{background:#2a1620;border-color:#3a1e29}
-  .note{color:var(--muted);font-size:13px;margin:10px 2px}
-  .table-wrap{border:1px solid var(--border);border-radius:14px;overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  thead th{position:sticky;top:0;background:linear-gradient(180deg,var(--head),#0b2845);padding:14px 10px;border-bottom:1px solid var(--border);
-           text-transform:uppercase;font-size:12px;letter-spacing:.08em}
+  
+  .note{color:var(--muted);font-size:12px;margin:10px 2px}
+  
+  .table-wrap{border:1px solid var(--border);border-radius:14px;overflow-x:auto}
+  table{width:100%;min-width:600px;border-collapse:collapse}
+  thead th{background:var(--head);padding:10px;border-bottom:1px solid var(--border);
+           text-transform:uppercase;font-size:11px;letter-spacing:.05em;white-space:nowrap}
   tbody tr:nth-child(odd){background:var(--row)}
   tbody tr:nth-child(even){background:var(--row2)}
-  td{padding:10px;border-bottom:1px solid var(--border);text-align:center}
-  .in{width:100%;max-width:120px;text-align:center;border:1px solid var(--border);background:#0f1626;color:var(--text);border-radius:10px;padding:10px}
-  .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700}
+  td{padding:6px;border-bottom:1px solid var(--border);text-align:center}
+  
+  .in{width:70px;text-align:center;border:1px solid var(--border);background:#0f1626;color:var(--text);border-radius:8px;padding:6px;font-size:14px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:700;font-size:13px}
   .pos{color:var(--green);background:rgba(57,217,138,.12)}
   .neg{color:var(--red);background:rgba(255,107,107,.12)}
-  .trash{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:#1c2538;color:#ff8f8f;font-size:18px}
-  .footer{margin-top:14px;color:var(--muted);font-size:12px;text-align:center}
+  .trash{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#1c2538;color:#ff8f8f;font-size:16px}
+  
+  .footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
 </style>
 </head>
 <body>
@@ -40,33 +47,31 @@
   <header>
     <h1>EV Value Bet Calculator</h1>
     <div class="controls">
-      <label for="bbCost">Стоимость 1 bb:</label>
+      <label for="bbCost">1 bb:</label>
       <select id="bbCost">
         <option>20</option><option>30</option><option selected>40</option><option>60</option>
         <option>80</option><option>100</option><option>120</option><option>150</option>
       </select>
-      <button class="btn" id="addRow">Добавить строку</button>
+      <button class="btn" id="addRow">+</button>
       <button class="btn danger" id="clearRows">Очистить</button>
     </div>
   </header>
 
   <div class="note">
-    Формулы: <b>EV(BB) = F·P + (1−F)·( Eq·(P+B) − (1−Eq)·B )</b>, где <b>P</b> — Pot, <b>B</b> — Bet, <b>F</b> — Fold% (доля фолдов),
-    <b>Eq</b> — наша эквити против его колла (0..1). <b>Zero‑EV Eq</b> = \((B − F·P)/(P + 2B − F·P)\).
-    <b>EV(фишки)</b> = EV(BB) × цена bb.
+    Формула: <b>EV(BB) = F·P + (1−F)·(Eq·(P+B) − (1−Eq)·B)</b>
   </div>
 
   <div class="table-wrap">
     <table id="tbl">
       <thead>
         <tr>
-          <th>BET (BB)</th>
-          <th>POT (BB)</th>
-          <th>FOLD на сайз (%)</th>
-          <th>Eq vs call (%)</th>
-          <th>Zero‑EV Eq (%)</th>
+          <th>BET</th>
+          <th>POT</th>
+          <th>FOLD%</th>
+          <th>Eq%</th>
+          <th>Zero-EV Eq%</th>
           <th>EV (BB)</th>
-          <th>EV (фишки)</th>
+          <th>EV (фиш)</th>
           <th></th>
         </tr>
       </thead>
@@ -74,7 +79,7 @@
     </table>
   </div>
 
-  <div class="footer">Хочешь объединить со страницами тренажёров и логином? Помогу. А пока держи ссылку на полезные инструменты — <a href="https://gptonline.ai/" target="_blank" rel="noreferrer">gptonline.ai</a></div>
+  <div class="footer">gptonline.ai</div>
 </div>
 
 <script>
@@ -84,33 +89,23 @@
   const bbCostEl = $('#bbCost');
   const RU = 'ru-RU';
   const clamp01 = x => Math.max(0, Math.min(1, x));
+  const fmt = (n, d=2)=> isFinite(n) ? Number(n.toFixed(d)).toLocaleString(RU) : '—';
 
-  function fmt(n, d=2){ return isFinite(n) ? Number(n.toFixed(d)).toLocaleString(RU) : '—'; }
-
-  // пересчёт строки
   function recalcRow(tr){
     const bet = parseFloat($('.bet',tr).value) || 0;
     const pot = parseFloat($('.pot',tr).value) || 0;
-    let foldPct = parseFloat($('.fold',tr).value); if(!isFinite(foldPct)) foldPct = 0;
-    let eqPct   = parseFloat($('.eq',tr).value);   if(!isFinite(eqPct))   eqPct   = 0;
-
+    let foldPct = parseFloat($('.fold',tr).value) || 0;
+    let eqPct   = parseFloat($('.eq',tr).value)   || 0;
     const F  = clamp01(foldPct/100);
     const Eq = clamp01(eqPct/100);
-
-    // Zero‑EV Eq
     let zeroEq = NaN;
     const denom = pot + 2*bet - F*pot;
     if (denom !== 0) zeroEq = (bet - F*pot) / denom * 100;
-
-    // EV (BB)
     const evBB = F*pot + (1-F) * ( Eq*(pot+bet) - (1-Eq)*bet );
     const evChips = evBB * (parseFloat(bbCostEl.value)||0);
-
     $('.zeroeq',tr).textContent = fmt(zeroEq,2);
-    const evCell = $('.evbb',tr);
-    evCell.innerHTML = `<span class="pill ${evBB>=0?'pos':'neg'}">${fmt(evBB,2)}</span>`;
-    const chipCell = $('.evchips',tr);
-    chipCell.innerHTML = `<span class="pill ${evBB>=0?'pos':'neg'}">${fmt(evChips,2)}</span>`;
+    $('.evbb',tr).innerHTML = `<span class="pill ${evBB>=0?'pos':'neg'}">${fmt(evBB,2)}</span>`;
+    $('.evchips',tr).innerHTML = `<span class="pill ${evBB>=0?'pos':'neg'}">${fmt(evChips,2)}</span>`;
   }
 
   function attachRowHandlers(tr){
@@ -137,7 +132,6 @@
     recalcRow(tr);
   }
 
-  // стартовые строки (можешь менять)
   [
     {bet:12,pot:6,fold:10,eq:80},
     {bet:4,pot:4,fold:30,eq:65},
@@ -145,7 +139,6 @@
     {bet:9,pot:4,fold:20,eq:55},
   ].forEach(makeRow);
 
-  // контролы
   $('#addRow').addEventListener('click', ()=> makeRow({bet:4,pot:4,fold:30,eq:60}));
   $('#clearRows').addEventListener('click', ()=>{ tbody.innerHTML=''; makeRow({}); });
   bbCostEl.addEventListener('change', ()=>{ [...tbody.querySelectorAll('tr')].forEach(recalcRow); });
